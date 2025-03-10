@@ -13,9 +13,8 @@ export const authRegisterSchema = joi
     
     gender: joi.string().valid("male", "female").default("male"),
 
-    password: generalFeilds.password.required(),
+    password: generalFeilds.password.required()
 
-    cPassword: generalFeilds.cPassword.valid(joi.ref("password")).required(),
   })
   .required();
 
