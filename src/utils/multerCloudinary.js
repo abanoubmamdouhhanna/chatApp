@@ -11,10 +11,7 @@ import {
   videoTypes,
 } from "./filetypes.js";
 
-const uploadDir = "files";
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
+
 export const allowedTypesMap = {
   profilePic: imageTypes,
   messageFile: [
@@ -50,17 +47,7 @@ const fileValidation = (allowedTypesMap = {}) => {
 };
 
 export function fileUpload(size, allowedTypesMap) {
-  const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-      cb(null, uploadDir);
-    },
-    filename: (req, file, cb) => {
-      const uniqueName = `${Date.now()}-${Math.round(
-        Math.random() * 1e9
-      )}${path.extname(file.originalname)}`;
-      cb(null, uniqueName);
-    },
-  });
+  const storage = multer.diskStorage({});
   const limits = { fileSize: size * 1024 * 1024 };
   const fileFilter = fileValidation(allowedTypesMap);
   const upload = multer({ fileFilter, storage, limits });
