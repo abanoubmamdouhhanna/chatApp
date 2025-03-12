@@ -7,6 +7,7 @@ import {
 } from "./controller/user.validation.js";
 import { isValid } from "../../middlewares/validation.middleware.js";
 import { auth } from "../../middlewares/auth.middleware.js";
+import { allowedTypesMap, fileUpload } from "../../utils/multerCloudinary.js";
 
 const router = Router();
 
@@ -45,5 +46,23 @@ router.patch(
 
 //recover account
 router.get("/accountRecovery/:reactiveToken", userController.accountRecovery);
+
+
+//profile pic
+router.patch(
+  "/uploadProfilePic",
+  isValid(headersSchema, true),
+  auth(["user"]),
+  fileUpload(2,allowedTypesMap).single("profilePic"),
+  userController.uploadProfilePic
+);
+
+//remove profile pic
+router.patch(
+  "/removeProfilePic",
+  isValid(headersSchema, true),
+  auth(["user"]),
+  userController.removeProfilePic
+);
 
 export default router;

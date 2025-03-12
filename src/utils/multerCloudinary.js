@@ -1,26 +1,14 @@
 import multer from "multer";
 import { asyncHandler } from "./errorHandling.js";
 import { dangerousExtensions } from "./dangerousExtensions.js";
-import path from "path";
-import fs from "fs";
 import {
-  audioTypes,
-  compressedTypes,
-  documentTypes,
+  
   imageTypes,
-  videoTypes,
 } from "./filetypes.js";
 
 
 export const allowedTypesMap = {
   profilePic: imageTypes,
-  messageFile: [
-    ...documentTypes,
-    ...imageTypes,
-    ...videoTypes,
-    ...audioTypes,
-    ...compressedTypes,
-  ],
 };
 
 const fileValidation = (allowedTypesMap = {}) => {

@@ -8,6 +8,9 @@ import {
 import { accountRecoveryEmail } from "../../../utils/Emails/accountRecoveryEmail.js";
 import moment from "moment";
 import sendEmail from "../../../utils/Emails/sendEmail.js";
+import { uploadToCloudinary } from "../../../utils/uploadHelper.js";
+import cloudinary from "../../../utils/cloudinary.js";
+
 
 // 👤 **Get User Profile**
 export const userProfile = asyncHandler(async (req, res, next) => {
@@ -197,5 +200,65 @@ export const accountRecovery = asyncHandler(async (req, res, next) => {
     status: "success",
     message: "Your account recoverd successfully",
     result: user,
+  });
+});
+//====================================================================================================================//
+//profile pic
+export const uploadProfilePic = asyncHandler(async (req, res, next) => {
+  if (!req.file) {
+    return next(
+      new Error("Please select your profile picture", { cause: 400 })
+    );
+  }
+  const user = await userModel.findById(req.user._id);
+  if (!user) {
+    return next(new Error("User not found.", { cause: 404 }));
+  }
+
+  const profilePic = await uploadToCloudinary(
+    req.file,
+    `${process.env.APP_NAME}/User/${user.customId}`,
+    `${user.customId}profilePic`
+  );
+
+  user.profilePic = profilePic;
+  user.profilePicPublicId = `${process.env.APP_NAME}/User/${user.customId}/${user.customId}profilePic`;
+  await user.save();
+
+  return res.status(200).json({
+    status: "success",
+    message: "Profile Picture uploaded successfully",
+    user: user,
+  });
+});
+//====================================================================================================================//
+//remove profile pic
+export const removeProfilePic = asyncHandler(async (req, res, next) => {
+  const user = await userModel.findById(req.user._id);
+
+  if (!user) {
+    return next(new Error("User not found.", { cause: 404 }));
+  }
+
+  // Check if the user has a profile picture before deleting
+  if (user.profilePicPublicId) {
+    await cloudinary.uploader.destroy(user.profilePicPublicId);
+  } else {
+    return next(
+      new Error("No profile picture found to remove.", { cause: 400 })
+    );
+  }
+
+  // Remove profile picture and its public ID
+  const updatedUser = await userModel.findByIdAndUpdate(
+    req.user._id,
+    { $unset: { profilePic: 1, profilePicPublicId: 1 } },
+    { new: true }
+  );
+
+  return res.status(200).json({
+    status: "success",
+    message: "Profile picture removed successfully.",
+    user: updatedUser,
   });
 });

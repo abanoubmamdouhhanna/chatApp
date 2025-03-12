@@ -53,6 +53,8 @@ const userSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    profilePic:String,
+    profilePicPublicId:String,
     activationCode: String,
     otp: String,
     otpexp: Date,
