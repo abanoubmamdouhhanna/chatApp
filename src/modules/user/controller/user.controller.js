@@ -217,12 +217,12 @@ export const uploadProfilePic = asyncHandler(async (req, res, next) => {
 
   const profilePic = await uploadToCloudinary(
     req.file,
-    `${process.env.APP_NAME}/User/${user.customId}`,
-    `${user.customId}profilePic`
+    `${process.env.APP_NAME}/User/${user.randomId}`,
+    `${user.randomId}profilePic`
   );
 
   user.profilePic = profilePic;
-  user.profilePicPublicId = `${process.env.APP_NAME}/User/${user.customId}/${user.customId}profilePic`;
+  user.profilePicPublicId = `${process.env.APP_NAME}/User/${user.randomId}/${user.randomId}profilePic`;
   await user.save();
 
   return res.status(200).json({

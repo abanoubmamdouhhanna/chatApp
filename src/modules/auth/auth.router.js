@@ -10,11 +10,14 @@ import {
 } from "./controller/auth.validation.js";
 import { isValid } from "../../middlewares/validation.middleware.js";
 import { auth } from "../../middlewares/auth.middleware.js";
+import { allowedTypesMap, fileUpload } from "../../utils/multerCloudinary.js";
 
 const router = Router();
 
 //registeration
-router.post("/register", isValid(authRegisterSchema), authController.signUp);
+router.post("/register",
+  fileUpload(2,allowedTypesMap).single("profilePic"),
+  isValid(authRegisterSchema), authController.signUp);
 
 //login
 router.post("/login", isValid(logInSchema), authController.logIn);

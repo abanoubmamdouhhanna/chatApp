@@ -11,6 +11,7 @@ import {
 import userModel from "../../../../DB/models/User.model.js";
 import { activationMail } from "../../../utils/Emails/activationMail.js";
 import { emitter } from "../../../utils/eventEmitter.js";
+import { uploadToCloudinary } from "../../../utils/uploadHelper.js";
 
 // registeration
 export const signUp = asyncHandler(async (req, res, next) => {
@@ -32,6 +33,17 @@ export const signUp = asyncHandler(async (req, res, next) => {
       isUnique = true;
     }
   }
+  if (!req.file) {
+    return next(
+      new Error("Please select your profile picture", { cause: 400 })
+    );
+  }
+    const profilePic = await uploadToCloudinary(
+      req.file,
+      `${process.env.APP_NAME}/User/${random}`,
+      `${random}profilePic`
+    );
+    const profilePicPublicId = `${process.env.APP_NAME}/User/${random}/${random}profilePic`;
 
   // Generate activation code
   const activationCode = crypto.randomBytes(64).toString("hex");
@@ -48,6 +60,8 @@ export const signUp = asyncHandler(async (req, res, next) => {
     email,
     password: hashPassword,
     activationCode,
+    profilePic,
+    profilePicPublicId
   });
   // Send email asynchronously
   const protocol = req.protocol;

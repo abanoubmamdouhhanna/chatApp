@@ -13,7 +13,9 @@ export const authRegisterSchema = joi
     
     gender: joi.string().valid("male", "female").default("male"),
 
-    password: generalFeilds.password.required()
+    password: generalFeilds.password.required(),
+
+    file: generalFeilds.file.required(),
 
   })
   .required();
